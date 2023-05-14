@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
 import 'api.dart';
+import 'login_page.dart';
 
 class ProfilePage extends StatelessWidget {
   final String token;
 
   ProfilePage(this.token);
+
+  void _logout(BuildContext context) {
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => LoginPage()),
+      (Route<dynamic> route) => false,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +39,10 @@ class ProfilePage extends StatelessWidget {
                   Text('Username: ${userData['username']}'),
                   Text('Email: ${userData['email']}'),
                   // Display other user data here...
+                  ElevatedButton(
+                    onPressed: () => _logout(context),
+                    child: Text('Logout'),
+                  ),
                 ],
               ),
             );
