@@ -40,7 +40,8 @@ class RegisterPage extends StatelessWidget {
                   try {
                     final String token =
                         await register(username, password, email);
-                    // Save the token securely.
+                    // TODO: Save the token securely here.
+
                     // Notify user about successful registration
                     showDialog(
                       context: context,
@@ -55,6 +56,7 @@ class RegisterPage extends StatelessWidget {
                               onPressed: () {
                                 Navigator.of(context)
                                     .popUntil((route) => route.isFirst);
+                                Navigator.of(context).pop();
                               },
                             ),
                           ],
