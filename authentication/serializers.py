@@ -32,3 +32,5 @@ class LoginSerializer(serializers.Serializer):
         else:
             msg = 'Must include "username" and "password".'
             raise serializers.ValidationError(msg)
+
+

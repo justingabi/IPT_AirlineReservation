@@ -73,7 +73,6 @@ class RegisterPage extends StatelessWidget {
                             onPressed: () {
                               Navigator.of(context)
                                   .popUntil((route) => route.isFirst);
-                              Navigator.of(context).pop();
                             },
                           ),
                         ],

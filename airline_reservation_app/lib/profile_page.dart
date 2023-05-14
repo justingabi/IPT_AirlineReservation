@@ -1,21 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'api.dart';
-import 'login_page.dart';
+import 'auth_provider.dart';
 
 class ProfilePage extends StatelessWidget {
-  final String token;
-
-  ProfilePage(this.token);
-
-  void _logout(BuildContext context) {
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (context) => LoginPage()),
-      (Route<dynamic> route) => false,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    final String token = Provider.of<AuthProvider>(context).token!;
+    final String username = Provider.of<AuthProvider>(context).username ?? '';
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Profile'),
@@ -29,20 +22,16 @@ class ProfilePage extends StatelessWidget {
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else {
-            // Ensure the data is not null
             final Map<String, dynamic> userData = snapshot.data ?? {};
+
             return Padding(
               padding: EdgeInsets.all(8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text('Username: ${userData['username']}'),
+                  Text('Username: $username'),
                   Text('Email: ${userData['email']}'),
                   // Display other user data here...
-                  ElevatedButton(
-                    onPressed: () => _logout(context),
-                    child: Text('Logout'),
-                  ),
                 ],
               ),
             );

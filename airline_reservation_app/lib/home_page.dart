@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'api.dart';
+import 'auth_provider.dart';
 import 'bookings_page.dart';
 
 class HomePage extends StatefulWidget {
+  final String? token;
+
+  const HomePage({Key? key, this.token}) : super(key: key);
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -97,9 +102,10 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final String username = Provider.of<AuthProvider>(context).username ?? '';
     return Scaffold(
       appBar: AppBar(
-        title: Text('Flights'),
+        title: Text('Welcome, $username!'),
       ),
       body: Container(
         padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),

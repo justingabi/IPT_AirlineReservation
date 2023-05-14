@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'api.dart';
+import 'auth_provider.dart';
 
 class LoginPage extends StatelessWidget {
   final TextEditingController usernameController = TextEditingController();
@@ -11,75 +13,68 @@ class LoginPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Login'),
       ),
-      body: Container(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Image.asset(
-              'assets/airplane_logo.png', // image
-              width: 150.0,
-              height: 150.0,
-            ),
-            SizedBox(height: 24.0),
-            TextField(
-              controller: usernameController,
-              decoration: InputDecoration(
-                labelText: 'Username',
-                prefixIcon: Icon(Icons.person),
+      body: Center(
+        child: Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              TextField(
+                controller: usernameController,
+                decoration: InputDecoration(hintText: 'Username'),
               ),
-            ),
-            SizedBox(height: 16.0),
-            TextField(
-              controller: passwordController,
-              decoration: InputDecoration(
-                labelText: 'Password',
-                prefixIcon: Icon(Icons.lock),
+              TextField(
+                controller: passwordController,
+                decoration: InputDecoration(hintText: 'Password'),
+                obscureText: true,
               ),
-              obscureText: true,
-            ),
-            SizedBox(height: 24.0),
-            ElevatedButton(
-              onPressed: () async {
-                final String username = usernameController.text;
-                final String password = passwordController.text;
+              ElevatedButton(
+                onPressed: () async {
+                  final String username = usernameController.text;
+                  final String password = passwordController.text;
 
-                try {
-                  final String token = await login(username, password);
+                  try {
+                    final String token = await login(username, password);
 
-                  // Save the token securely.
-                  // Navigate to the main page.
-                  Navigator.of(context)
-                      .pushNamedAndRemoveUntil('/main', (route) => false);
-                } catch (e) {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text('Login failed'),
-                        content: Text('Would you like to register?'),
-                        actions: <Widget>[
-                          TextButton(
-                            child: Text('Cancel'),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                          TextButton(
-                            child: Text('Register'),
-                            onPressed: () {
-                              Navigator.of(context).pushNamed('/register');
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                }
-              },
-              child: Text('Login'),
-            ),
-          ],
+                    // Save the token securely.
+                    Provider.of<AuthProvider>(context, listen: false)
+                        .setToken(token);
+                    Provider.of<AuthProvider>(context, listen: false)
+                        .setUsername(username);
+
+                    // Navigate to the main page.
+                    Navigator.of(context)
+                        .pushNamedAndRemoveUntil('/main', (route) => false);
+                  } catch (e) {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Login failed'),
+                          content: Text('Would you like to register?'),
+                          actions: <Widget>[
+                            TextButton(
+                              child: Text('Cancel'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                            TextButton(
+                              child: Text('Register'),
+                              onPressed: () {
+                                Navigator.of(context).pushNamed('/register');
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
+                },
+                child: Text('Login'),
+              ),
+            ],
+          ),
         ),
       ),
     );

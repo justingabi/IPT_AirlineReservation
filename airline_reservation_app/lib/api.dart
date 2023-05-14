@@ -117,3 +117,22 @@ Future<Map<String, dynamic>> fetchUserData(String token) async {
     throw Exception('Failed to load user data.');
   }
 }
+
+Future<String?> fetchUsername(String? token) async {
+  final response = await http.get(
+    Uri.parse('http://localhost:8000/api/auth/user/'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Authorization': 'Token $token',
+    },
+  );
+
+  print('Token: $token');
+
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    return data['username'];
+  } else {
+    throw Exception('Failed to fetch username');
+  }
+}
