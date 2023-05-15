@@ -1,11 +1,20 @@
 // ignore_for_file: avoid_print
 
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter/foundation.dart';
+import 'package:provider/provider.dart';
+import 'auth_provider.dart';
 
-Future<List<dynamic>> fetchFlights() async {
-  final response =
-      await http.get(Uri.parse('http://localhost:8000/api/flights/'));
+Future<List<dynamic>> fetchFlights(String token) async {
+  final response = await http.get(
+    Uri.parse('http://localhost:8000/api/flights/'),
+    headers: <String, String>{
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+  );
 
   if (response.statusCode == 200) {
     final List<dynamic> flights = jsonDecode(response.body);
@@ -27,35 +36,54 @@ Future<List<dynamic>> fetchFlights() async {
   }
 }
 
-Future<void> bookFlight(int flightId) async {
-  print('Booking flight with ID: $flightId');
-  final response = await http.post(
-    Uri.parse('http://localhost:8000/api/bookings/'),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(<String, int>{
-      'flight': flightId,
-    }),
-  );
+// Future<String> login(String username, String password) async {
+//   final url = Uri.parse('http://localhost:8000/api/login/');
+//   final headers = {'Content-Type': 'application/json'};
+//   final body = jsonEncode({'username': username, 'password': password});
 
-  print('Response status code: ${response.statusCode}');
-  print('Response body: ${response.body}');
+//   final response = await http.post(url, headers: headers, body: body);
 
-  if (response.statusCode != 201) {
-    throw Exception('Failed to book flight');
+//   if (response.statusCode == 200) {
+//     final Map<String, dynamic> data = jsonDecode(response.body);
+//     return data['token'];
+//   } else {
+//     throw Exception('Failed to login.');
+//   }
+// }
+
+Future<String> bookFlight(int flightId, String token) async {
+  final url = Uri.parse('http://localhost:8000/api/bookings/');
+  final headers = {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer $token',
+  };
+  final body = jsonEncode({'flight': flightId});
+
+  final response = await http.post(url, headers: headers, body: body);
+
+  if (response.statusCode == 201) {
+    return 'Booking successful!';
+  } else if (response.statusCode == 400) {
+    final Map<String, dynamic> responseData = jsonDecode(response.body);
+    final String message = responseData['message'];
+    throw Exception('Failed to book flight: $message');
+  } else {
+    throw Exception('Failed to book flight.');
   }
 }
 
-Future<List<dynamic>> fetchBookings() async {
-  final response =
-      await http.get(Uri.parse('http://localhost:8000/api/bookings/'));
+Future<List<dynamic>> fetchBookings(BuildContext context) async {
+  final token = Provider.of<AuthProvider>(context, listen: false).token;
+  final response = await http.get(
+    Uri.parse('http://localhost:8000/api/bookings/'),
+    headers: {
+      'Authorization': 'Bearer $token',
+    },
+  );
 
   if (response.statusCode == 200) {
     return jsonDecode(response.body);
   } else {
-    print('Failed to load bookings with status code: ${response.statusCode}');
-    print('Response body: ${response.body}');
     throw Exception('Failed to load bookings');
   }
 }
@@ -134,5 +162,23 @@ Future<String?> fetchUsername(String? token) async {
     return data['username'];
   } else {
     throw Exception('Failed to fetch username');
+  }
+}
+
+Future<void> deleteBooking(int bookingId) async {
+  final url = Uri.parse('http://localhost:8000/api/bookings/$bookingId/');
+
+  try {
+    final response = await http.delete(url);
+    if (response.statusCode == 204) {
+      // Booking deleted successfully
+      print('Booking deleted');
+    } else {
+      // Failed to delete booking
+      throw Exception('Failed to delete booking');
+    }
+  } catch (error) {
+    // Handle any errors that occurred during the request
+    throw Exception('Failed to delete booking: $error');
   }
 }

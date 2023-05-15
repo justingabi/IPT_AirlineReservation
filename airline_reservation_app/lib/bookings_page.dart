@@ -12,7 +12,7 @@ class _BookingsPageState extends State<BookingsPage> {
   @override
   void initState() {
     super.initState();
-    futureBookings = fetchBookings();
+    futureBookings = fetchBookings(context);
   }
 
   @override
@@ -29,11 +29,30 @@ class _BookingsPageState extends State<BookingsPage> {
               return ListView.builder(
                 itemCount: snapshot.data!.length,
                 itemBuilder: (context, index) {
-                  return ListTile(
-                    title:
-                        Text(snapshot.data![index]['flight']['flight_number']),
-                    subtitle: Text(
-                        'From ${snapshot.data![index]['flight']['origin']} to ${snapshot.data![index]['flight']['destination']}'),
+                  final booking = snapshot.data![index];
+                  final flight = booking['flight'];
+
+                  return Dismissible(
+                    key: Key(booking['id'].toString()),
+                    direction: DismissDirection.endToStart,
+                    background: Container(
+                      color: Colors.red,
+                      alignment: Alignment.centerRight,
+                      padding: EdgeInsets.only(right: 16.0),
+                      child: Icon(
+                        Icons.delete,
+                        color: Colors.white,
+                      ),
+                    ),
+                    onDismissed: (direction) {
+                      deleteBooking(booking['id']);
+                    },
+                    child: ListTile(
+                      title: Text(flight['flight_number']),
+                      subtitle: Text(
+                        'From ${flight['origin']} to ${flight['destination']}',
+                      ),
+                    ),
                   );
                 },
               );
@@ -41,7 +60,6 @@ class _BookingsPageState extends State<BookingsPage> {
               return Text('${snapshot.error}');
             }
 
-            // By default, show a loading spinner.
             return CircularProgressIndicator();
           },
         ),

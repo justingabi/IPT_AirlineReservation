@@ -17,11 +17,6 @@ class RegisterPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Image.asset(
-              'assets/registration_image.png', // Replace with your own image path
-              width: 150.0,
-              height: 150.0,
-            ),
             SizedBox(height: 24.0),
             TextField(
               controller: usernameController,

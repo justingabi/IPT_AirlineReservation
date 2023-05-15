@@ -14,11 +14,16 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late Future<List<dynamic>> futureFlights;
-
   @override
   void initState() {
     super.initState();
-    futureFlights = fetchFlights();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    futureFlights = fetchFlights(authProvider.token!);
   }
 
   void _showFlightDetails(BuildContext context, Map<String, dynamic> flight) {
@@ -86,10 +91,26 @@ class _HomePageState extends State<HomePage> {
                 Align(
                   alignment: Alignment.center,
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
+                    onPressed: () async {
+                      try {
+                        final authProvider =
+                            Provider.of<AuthProvider>(context, listen: false);
+                        final message =
+                            await bookFlight(flight['id'], authProvider.token!);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(message),
+                          ),
+                        );
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Failed to book flight: $e'),
+                          ),
+                        );
+                      }
                     },
-                    child: Text('Close'),
+                    child: Text('Book'),
                   ),
                 ),
               ],
@@ -103,6 +124,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final String username = Provider.of<AuthProvider>(context).username ?? '';
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Welcome, $username!'),
@@ -168,8 +190,30 @@ class _HomePageState extends State<HomePage> {
                                 Align(
                                   alignment: Alignment.centerRight,
                                   child: ElevatedButton(
-                                    onPressed: () {
-                                      bookFlight(snapshot.data![index]['id']);
+                                    onPressed: () async {
+                                      try {
+                                        final authProvider =
+                                            Provider.of<AuthProvider>(context,
+                                                listen: false);
+                                        final message = await bookFlight(
+                                          snapshot.data![index]['id'],
+                                          authProvider.token!,
+                                        );
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text(message),
+                                          ),
+                                        );
+                                      } catch (e) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                                'Failed to book flight: $e'),
+                                          ),
+                                        );
+                                      }
                                     },
                                     child: Text('Book'),
                                   ),
@@ -183,7 +227,6 @@ class _HomePageState extends State<HomePage> {
                   } else if (snapshot.hasError) {
                     return Text('${snapshot.error}');
                   }
-
                   return Center(child: CircularProgressIndicator());
                 },
               ),

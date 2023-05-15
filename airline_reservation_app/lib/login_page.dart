@@ -20,10 +20,10 @@ class LoginPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Image.asset(
-                'assets/zner.png', // Replace with your own image path
+                'assets/zner.png',
                 fit: BoxFit.cover,
               ),
-              SizedBox(height: 24.0),
+              SizedBox(height: 20),
               TextField(
                 controller: usernameController,
                 decoration: InputDecoration(hintText: 'Username'),
