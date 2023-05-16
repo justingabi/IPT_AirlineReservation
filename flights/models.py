@@ -14,8 +14,9 @@ class Flight(models.Model):
 
 
 class Booking(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    flight = models.ForeignKey(Flight, on_delete=models.CASCADE)
+    id = models.CharField(primary_key=True, max_length=100)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='booked_flights',)
+    flight = models.ForeignKey(Flight, on_delete=models.CASCADE, related_name='booked_flights',)
     date_of_booking = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

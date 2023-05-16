@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'home_page.dart';
 import 'login_page.dart';
 import 'register_page.dart';
-import 'auth_provider.dart';
+import 'provider/auth_provider.dart';
 
 void main() {
   runApp(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'api.dart';
-import 'auth_provider.dart';
+import 'provider/auth_provider.dart';
 import 'bookings_page.dart';
 
 class HomePage extends StatefulWidget {
