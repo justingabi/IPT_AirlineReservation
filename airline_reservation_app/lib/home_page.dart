@@ -91,26 +91,10 @@ class _HomePageState extends State<HomePage> {
                 Align(
                   alignment: Alignment.center,
                   child: ElevatedButton(
-                    onPressed: () async {
-                      try {
-                        final authProvider =
-                            Provider.of<AuthProvider>(context, listen: false);
-                        final message =
-                            await bookFlight(flight['id'], authProvider.token!);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(message),
-                          ),
-                        );
-                      } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Failed to book flight: $e'),
-                          ),
-                        );
-                      }
+                    onPressed: () {
+                      Navigator.of(context).pop();
                     },
-                    child: Text('Book'),
+                    child: Text('Close'),
                   ),
                 ),
               ],
@@ -128,6 +112,15 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Welcome, $username!'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () {
+              Navigator.of(context)
+                  .pushNamedAndRemoveUntil('/login', (route) => false);
+            },
+          ),
+        ],
       ),
       body: Container(
         padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
@@ -215,7 +208,7 @@ class _HomePageState extends State<HomePage> {
                                         );
                                       }
                                     },
-                                    child: Text('Book'),
+                                    child: Text('ADD'),
                                   ),
                                 ),
                               ],

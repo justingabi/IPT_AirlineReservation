@@ -10,9 +10,7 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Login'),
-      ),
+      appBar: AppBar(),
       body: Center(
         child: Padding(
           padding: EdgeInsets.all(8.0),
